@@ -1,16 +1,53 @@
-# Importing NumPy Library
+from decimal import Decimal
+from fractions import Fraction
+
 import numpy as np
 import sys
 import copy
+import re
 
 INPUT = "input.txt"
 A = []
 residuals = []
 
 
+def isint(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 def print_data(mat):
     for i in range(number):
-        print('X%d = %0.2f' % (i, mat[i]), end='\t')
+        print('X', end='')
+        print(i + 1, end='')
+        print('=', end=' ')
+        s = '{0:.100f}'.format(mat[i]).rstrip('0').rstrip('.')
+        conter = 0
+        if (isint(s)):
+            print(mat[i], end='\t')
+        else:
+            first = True
+            print(s.split('.')[0], end='')
+            print('.', end='')
+            for c in s.split('.')[1]:
+                if c != '0':
+                    first = False
+                    conter += 1
+                    print(c, end='')
+                    if conter == 3:
+                        break
+                else:
+                    if first:
+                        print('0', end='')
+                    else:
+                        conter += 1
+                        print(c, end='')
+                        if conter == 3:
+                            break
+            print(' ', end='')
     print()
 
 
@@ -80,31 +117,7 @@ def read_from_console():
     return temp
 
 
-def solve_minor(mat, i, j):
-    n = len(mat)
-    return [[mat[row][col] for col in range(n) if col != j] for row in range(n) if row != i]
-
-
-def solve_det(mat):
-    n = len(mat)
-    if n == 1:
-        return mat[0][0]
-    det = 0
-    current_sign = 1
-    for i in range(n):
-        det += current_sign * mat[0][i] * solve_det(solve_minor(mat, 0, i))
-        current_sign *= -1
-    return det
-
-
-def is_singular(m):
-    for i in range(len(m)):
-        if not m[i][i]:
-            return True
-    return False
-
-
-def bubble_max_row(m, col):
+def swap_rows(m, col):
     max_element = m[col][col]
     max_row = col
     for i in range(col + 1, len(m)):
@@ -118,7 +131,7 @@ def bubble_max_row(m, col):
 def gauss_method():
     for i in range(number):
         if matrix[i][i] == 0.0:
-            bubble_max_row(matrix, i)
+            swap_rows(matrix, i)
         for j in range(i + 1, number):
             ratio = matrix[j][i] / matrix[i][i]
             for k in range(number + 1):
@@ -163,7 +176,7 @@ print("\nИсходная матрица:")
 print_matrix(matrix)
 roots = np.zeros(number)
 print("\nОпределитель:")
-det = solve_det(matrix)
+det = np.linalg.det(A)
 check_matrix(det)
 print(det)
 print("\nПриведенная матрица:")
@@ -174,5 +187,4 @@ back_substitution()
 print_data(roots)
 print("\nВектор невязок:")
 count_residuals()
-print_data(residuals)
-
+print(residuals)
