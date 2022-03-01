@@ -1,12 +1,8 @@
-from decimal import Decimal
-from fractions import Fraction
-
 import numpy as np
 import sys
 import copy
-import re
 
-INPUT = "input.txt"
+INPUT = "input2.txt"
 A = []
 residuals = []
 
